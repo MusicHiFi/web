@@ -1,0 +1,2893 @@
+<html>
+
+<head>
+  <title>MusicHiFi: Efficient High-Fidelity Stereo Vocoding</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <meta name="theme-color" content="#563d7c">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      table-layout: fixed;
+    }
+
+
+    td {
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    audio {
+      width: 100%;
+      /* height: 70%; */
+    }
+  </style>
+</head>
+
+<body bgcolor="#FFFFFF" link="#000000" vlink="#000000" alink="#000000">
+  <div class="text-center">
+    <br>
+    <div class="text-wrap" width="200px">
+      <font face="helvetica , ariel, &#39;sans serif&#39;" size="6">
+        <b>MusicHiFi: Efficient High-Fidelity Stereo Vocoding</b><br><br>
+      </font>
+    </div>
+
+    <p style="font-size: 1.3em; margin-bottom: 0;">
+      <a href="https://gzhu06.github.io/"> Ge Zhu<sup>1,2*</sup> </a>&nbsp;
+      <a href="https://research.adobe.com/person/juan-pablo-caceres/">Juan-Pablo Caceres<sup>2</sup> </a>&nbsp;
+      <a href="https://hajim.rochester.edu/ece/sites/zduan/"> Zhiyao Duan<sup>1</sup></a> &nbsp;
+      <a href="https://njb.github.io/"> Nicholas J. Bryan<sup>2</sup></a> &nbsp;
+    </p>
+    <p style="margin-top: 0;">
+      <sup>1</sup>University of Rochester, Rochester, NY<br>
+      <sup>2</sup>Adobe Research <br>
+      <sup>*</sup>Work done during an internship at Adobe Research <br>
+    </p>
+
+    <div class="m-5">
+      <a class="btn btn-outline-dark" href="https://arxiv.org/" type="button"><i
+          class="bi bi-newspaper"></i> Paper</a>
+      <a class="btn btn-outline-dark" href="https://youtube.com" type="button"> <i
+          class="bi bi-camera-reels"></i> Video</a>
+      <a class="btn btn-outline-dark" href="https://huggingface.co/" type="button"> <i
+            class=""></i> &#129303; HF paper</a>
+          
+    </div>
+
+    <div class="container mt-4" style="max-width: 1000px;">
+      <div class="container">
+
+        <div class="container mt-4 " style="max-width: 950px;">
+          <div class="container">
+            <div class="section">
+              <!-- # Show video -->
+              <div class="embed-responsive embed-responsive-16by9">
+                <iframe width="560" height="315" src="https://www.youtube.com/"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+              </div>
+              <br>
+              <!-- Show Abstract -->
+              <h1 class="text-justify">Abstract</h1>
+              <hr>
+              <p class="pr-5 pl-5 text-justify">
+                In diffusion-based text-to-music (TTM) generation, one typical approach involves a cascaded system that starts with a text-to-spectrogram diffusion-based generator, followed by a phase reconstructor (vocoder) to convert the spectrogram into a waveform.
+Commonly used vocoders produce monophonic audio at lower resolutions (e.g. 16-24kHz), which limits their use for applications requiring high-fidelity sound.
+To address this issue, we propose MusicHiFi - a new vocoder for high-fidelity stereophonic sound generation.
+Our method employs a cascade of three generative adversarial network-based models (GAN-triplet), each designed to progressively enhance the fidelity of the generated music. 
+Initially, we convert spectrograms to low-resolution audio. This low-resolution audio is then upsampled to high-resolution monophonic audio using a bandwidth expander. 
+The final step involves converting this mono high-resolution audio into stereophonic high-resolution audio.
+Compared to previous work, our method integrates a unified GAN-based discriminator and generator design, complemented by a novel cycle-consistent mono-to-stereo module.
+By comparing both objective and subjective fidelity metrics on out-of-domain music datasets, our approach not only achieves competitive fidelity with remarkable efficiency, but also produces interpretable and listenable intermediate outputs.
+              </p>
+            </div><br>
+
+            <!-- Show bibtext -->
+            <div class="section text-left" div style='text-align:left'>
+              <h1>Bibtex</h1>
+              <!-- <hr> -->
+              <div style="background-color: #e9ecef; text-align:left;">
+                <pre>
+          <code>
+          @article{zhu2024musichifi,
+              title={MusicHiFi: Efficient High-Fidelity Stereo Vocoding}, 
+              year={2024},
+              archivePrefix={arXiv},
+              primaryClass={cs.SD},
+          }</code>
+                    </pre>
+              </div>
+            </div>
+
+            <div class="section text-justify">
+              <h1>Examples </h1>
+              We provide two groups of the samples demonstrating the high-fidelity stereo vocoding for music generation. 
+              The first group is focused on overall system performance on both generated music spectrogram and genuine music spectrogram.
+              The second group concentrates on the intermediate output from different vocoding stages, 
+              including bandwidth extension and controllable mono-to-stereo upmixing.
+              All of the genuine music spectrograms are from the licensed music, 
+              and the audio samples are in the format of mp3.
+
+              <table class="table table-sm text-center" style="vertical-align: middle;">
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Overall Performance</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Nostalgic-Country-126/mood=Nostalgic_genre=Country_BPM=126_instrumental=True_ref_267.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Nostalgic-Country-126/mood=Nostalgic_genre=Country_BPM=126_instrumental=True_ref_267.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Nostalgic-Country-126/mood=Nostalgic_genre=Country_BPM=126_instrumental=True_right-1_267.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Nostalgic-Country-126/mood=Nostalgic_genre=Country_BPM=126_instrumental=True_right-1_267.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Epic-Classical-127/mood=Epic_genre=Classical_BPM=127_instrumental=True_ref_249.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Epic-Classical-127/mood=Epic_genre=Classical_BPM=127_instrumental=True_ref_249.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Epic-Classical-127/mood=Epic_genre=Classical_BPM=127_instrumental=True_right-1_249.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Epic-Classical-127/mood=Epic_genre=Classical_BPM=127_instrumental=True_right-1_249.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Angry-Dance-112/mood=Angry_genre=Dance_BPM=112_instrumental=True_ref_129.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Angry-Dance-112/mood=Angry_genre=Dance_BPM=112_instrumental=True_ref_129.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Angry-Dance-112/mood=Angry_genre=Dance_BPM=112_instrumental=True_right-1_129.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Angry-Dance-112/mood=Angry_genre=Dance_BPM=112_instrumental=True_right-1_129.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Background-130/mood=Frantic_genre=Background_BPM=130_instrumental=True_ref_183.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Background-130/mood=Frantic_genre=Background_BPM=130_instrumental=True_ref_183.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Background-130/mood=Frantic_genre=Background_BPM=130_instrumental=True_right-1_183.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Background-130/mood=Frantic_genre=Background_BPM=130_instrumental=True_right-1_183.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_ref_78.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_ref_78.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_right-1_78.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_right-1_78.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Neutral-World-132/mood=Neutral_genre=World_BPM=132_instrumental=True_ref_219.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Neutral-World-132/mood=Neutral_genre=World_BPM=132_instrumental=True_ref_219.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Neutral-World-132/mood=Neutral_genre=World_BPM=132_instrumental=True_right-1_219.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Neutral-World-132/mood=Neutral_genre=World_BPM=132_instrumental=True_right-1_219.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Gritty-Dance-129/mood=Gritty_genre=Dance_BPM=129_instrumental=True_ref_273.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Gritty-Dance-129/mood=Gritty_genre=Dance_BPM=129_instrumental=True_ref_273.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Gritty-Dance-129/mood=Gritty_genre=Dance_BPM=129_instrumental=True_right-1_273.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Gritty-Dance-129/mood=Gritty_genre=Dance_BPM=129_instrumental=True_right-1_273.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Sad-Jazz-116/mood=Sad_genre=Jazz_BPM=116_instrumental=True_ref_166.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Sad-Jazz-116/mood=Sad_genre=Jazz_BPM=116_instrumental=True_ref_166.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Sad-Jazz-116/mood=Sad_genre=Jazz_BPM=116_instrumental=True_right-1_166.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Sad-Jazz-116/mood=Sad_genre=Jazz_BPM=116_instrumental=True_right-1_166.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Inspiring-Film-126/mood=Inspiring_genre=Film_BPM=116_instrumental=True_ref_91.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Inspiring-Film-126/mood=Inspiring_genre=Film_BPM=116_instrumental=True_ref_91.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Inspiring-Film-126/mood=Inspiring_genre=Film_BPM=116_instrumental=True_right-1_91.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Inspiring-Film-126/mood=Inspiring_genre=Film_BPM=116_instrumental=True_right-1_91.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Film-85/mood=Frantic_genre=Film_BPM=85_instrumental=True_ref_145.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Film-85/mood=Frantic_genre=Film_BPM=85_instrumental=True_ref_145.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Film-85/mood=Frantic_genre=Film_BPM=85_instrumental=True_right-1_145.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/1-Outpainting/Frantic-Film-85/mood=Frantic_genre=Film_BPM=85_instrumental=True_right-1_145.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Inpainting</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Sad-Jazz-139-173/mood=Sad_genre=Jazz_BPM=139_instrumental=True_ref_173.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Sad-Jazz-139-173/mood=Sad_genre=Jazz_BPM=139_instrumental=True_ref_173.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Sad-Jazz-139-173/mood=Sad_genre=Jazz_BPM=139_instrumental=True_inpaint-4_173.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Sad-Jazz-139-173/mood=Sad_genre=Jazz_BPM=139_instrumental=True_inpaint-4_173.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Electronic-142-137/mood=Inspiring_genre=Electronic_BPM=142_instrumental=True_ref_137.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Electronic-142-137/mood=Inspiring_genre=Electronic_BPM=142_instrumental=True_ref_137.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Electronic-142-137/mood=Inspiring_genre=Electronic_BPM=142_instrumental=True_inpaint-4_137.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Electronic-142-137/mood=Inspiring_genre=Electronic_BPM=142_instrumental=True_inpaint-4_137.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Film-131-53/mood=Epic_genre=Film_BPM=131_instrumental=True_ref_53.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Film-131-53/mood=Epic_genre=Film_BPM=131_instrumental=True_ref_53.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Film-131-53/mood=Epic_genre=Film_BPM=131_instrumental=True_inpaint-4_53.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Film-131-53/mood=Epic_genre=Film_BPM=131_instrumental=True_inpaint-4_53.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Acoustic-102-294/mood=Inspiring_genre=Acoustic_BPM=102_instrumental=True_ref_294.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Acoustic-102-294/mood=Inspiring_genre=Acoustic_BPM=102_instrumental=True_ref_294.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Acoustic-102-294/mood=Inspiring_genre=Acoustic_BPM=102_instrumental=True_inpaint-4_294.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Inspiring-Acoustic-102-294/mood=Inspiring_genre=Acoustic_BPM=102_instrumental=True_inpaint-4_294.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Frantic-Background-116-252/mood=Frantic_genre=Background_BPM=116_instrumental=True_ref_252.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Frantic-Background-116-252/mood=Frantic_genre=Background_BPM=116_instrumental=True_ref_252.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Frantic-Background-116-252/mood=Frantic_genre=Background_BPM=116_instrumental=True_inpaint-4_252.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Frantic-Background-116-252/mood=Frantic_genre=Background_BPM=116_instrumental=True_inpaint-4_252.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Classical-105-303/mood=Epic_genre=Classical_BPM=105_instrumental=True_ref_303.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Classical-105-303/mood=Epic_genre=Classical_BPM=105_instrumental=True_ref_303.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Classical-105-303/mood=Epic_genre=Classical_BPM=105_instrumental=True_inpaint-4_303.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Epic-Classical-105-303/mood=Epic_genre=Classical_BPM=105_instrumental=True_inpaint-4_303.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Classical-108-169/mood=Powerful_genre=Classical_BPM=108_instrumental=True_ref_169.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Classical-108-169/mood=Powerful_genre=Classical_BPM=108_instrumental=True_ref_169.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Classical-108-169/mood=Powerful_genre=Classical_BPM=108_instrumental=True_inpaint-4_169.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Classical-108-169/mood=Powerful_genre=Classical_BPM=108_instrumental=True_inpaint-4_169.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Angry-Dance-139-144/mood=Angry_genre=Dance_BPM=139_instrumental=True_ref_144.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Angry-Dance-139-144/mood=Angry_genre=Dance_BPM=139_instrumental=True_ref_144.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Angry-Dance-139-144/mood=Angry_genre=Dance_BPM=139_instrumental=True_inpaint-4_144.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Angry-Dance-139-144/mood=Angry_genre=Dance_BPM=139_instrumental=True_inpaint-4_144.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Rock-94-49/mood=Powerful_genre=Rock_BPM=94_instrumental=True_ref_49.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Rock-94-49/mood=Powerful_genre=Rock_BPM=94_instrumental=True_ref_49.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Rock-94-49/mood=Powerful_genre=Rock_BPM=94_instrumental=True_inpaint-4_49.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/2-Inpainting/Powerful-Rock-94-49/mood=Powerful_genre=Rock_BPM=94_instrumental=True_inpaint-4_49.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Looping</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="50">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Electronic-117/mood=Inspiring_genre=Electronic_BPM=117_instrumental=True_ref_109.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Electronic-117/mood=Inspiring_genre=Electronic_BPM=117_instrumental=True_ref_109.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Electronic-117/mood=Inspiring_genre=Electronic_BPM=117_instrumental=True_rightloop-1_109.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Electronic-117/mood=Inspiring_genre=Electronic_BPM=117_instrumental=True_rightloop-1_109.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Sad-Jazz-109/mood=Sad_genre=Jazz_BPM=109_instrumental=True_ref_116.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Sad-Jazz-109/mood=Sad_genre=Jazz_BPM=109_instrumental=True_ref_116.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Sad-Jazz-109/mood=Sad_genre=Jazz_BPM=109_instrumental=True_rightloop-1_193.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Sad-Jazz-109/mood=Sad_genre=Jazz_BPM=109_instrumental=True_rightloop-1_193.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Background-130/mood=Inspiring_genre=Background_BPM=130_instrumental=True_ref_104.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Background-130/mood=Inspiring_genre=Background_BPM=130_instrumental=True_ref_104.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Background-130/mood=Inspiring_genre=Background_BPM=130_instrumental=True_rightloop-1_104.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Background-130/mood=Inspiring_genre=Background_BPM=130_instrumental=True_rightloop-1_104.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Nostalgic-Pop-123/mood=Nostalgic_genre=Pop_BPM=123_instrumental=True_ref_278.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Nostalgic-Pop-123/mood=Nostalgic_genre=Pop_BPM=123_instrumental=True_ref_278.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Nostalgic-Pop-123/mood=Nostalgic_genre=Pop_BPM=123_instrumental=True_rightloop-1_278.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Nostalgic-Pop-123/mood=Nostalgic_genre=Pop_BPM=123_instrumental=True_rightloop-1_278.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-87/mood=Epic_genre=Classical_BPM=87_instrumental=True_ref_88.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-87/mood=Epic_genre=Classical_BPM=87_instrumental=True_ref_88.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-87/mood=Epic_genre=Classical_BPM=87_instrumental=True_rightloop-1_88.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-87/mood=Epic_genre=Classical_BPM=87_instrumental=True_rightloop-1_88.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-124/mood=Epic_genre=Classical_BPM=124_instrumental=True_ref_298.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-124/mood=Epic_genre=Classical_BPM=124_instrumental=True_ref_298.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-124/mood=Epic_genre=Classical_BPM=124_instrumental=True_rightloop-1_298.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Epic-Classical-124/mood=Epic_genre=Classical_BPM=124_instrumental=True_rightloop-1_298.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Angry-Dance-92/mood=Angry_genre=Dance_BPM=92_instrumental=True_ref_103.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Angry-Dance-92/mood=Angry_genre=Dance_BPM=92_instrumental=True_ref_103.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Angry-Dance-92/mood=Angry_genre=Dance_BPM=92_instrumental=True_rightloop-1_103.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Angry-Dance-92/mood=Angry_genre=Dance_BPM=92_instrumental=True_rightloop-1_103.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Happy-Reggae-98/mood=Happy_genre=Reggae_BPM=98_instrumental=True_ref_11.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Happy-Reggae-98/mood=Happy_genre=Reggae_BPM=98_instrumental=True_ref_11.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Happy-Reggae-98/mood=Happy_genre=Reggae_BPM=98_instrumental=True_rightloop-1_11.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Happy-Reggae-98/mood=Happy_genre=Reggae_BPM=98_instrumental=True_rightloop-1_11.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Neutral-World-85/mood=Neutral_genre=World_BPM=85_instrumental=True_ref_294.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Neutral-World-85/mood=Neutral_genre=World_BPM=85_instrumental=True_ref_294.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Neutral-World-85/mood=Neutral_genre=World_BPM=85_instrumental=True_rightloop-1_294.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Neutral-World-85/mood=Neutral_genre=World_BPM=85_instrumental=True_rightloop-1_294.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_ref_299.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_ref_299.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_rightloop-1_299.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/4-Loops/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_rightloop-1_299.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Intensity Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Classical-128/mood=Epic_genre=Classical_BPM=128_instrumental=True_lohilo_jump_82.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Classical-128/mood=Epic_genre=Classical_BPM=128_instrumental=True_lohilo_jump_82.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Classical-128/mood=Epic_genre=Classical_BPM=128_instrumental=True_lohilo_jump_82_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Film-135/mood=Epic_genre=Film_BPM=135_instrumental=True_lohilo_lin_67.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Film-135/mood=Epic_genre=Film_BPM=135_instrumental=True_lohilo_lin_67.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Epic-Film-135/mood=Epic_genre=Film_BPM=135_instrumental=True_lohilo_lin_67_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Frantic-Rock-97/mood=Frantic_genre=Rock_BPM=97_instrumental=True_hilohi_jump_175.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Frantic-Rock-97/mood=Frantic_genre=Rock_BPM=97_instrumental=True_hilohi_jump_175.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Frantic-Rock-97/mood=Frantic_genre=Rock_BPM=97_instrumental=True_hilohi_jump_175_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Inspiring-Background-90/mood=Inspiring_genre=Background_BPM=90_instrumental=True_lo2hi_jump_71.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Inspiring-Background-90/mood=Inspiring_genre=Background_BPM=90_instrumental=True_lo2hi_jump_71.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Inspiring-Background-90/mood=Inspiring_genre=Background_BPM=90_instrumental=True_lo2hi_jump_71_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_hi2lo_lin_46.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_hi2lo_lin_46.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_hi2lo_lin_46_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Dance-99/mood=Happy_genre=Dance_BPM=99_instrumental=True_hi2lo_jump_61.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Dance-99/mood=Happy_genre=Dance_BPM=99_instrumental=True_hi2lo_jump_61.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Dance-99/mood=Happy_genre=Dance_BPM=99_instrumental=True_hi2lo_jump_61_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Pop-142/mood=Happy_genre=Pop_BPM=142_instrumental=True_hilohi_jump_70.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Pop-142/mood=Happy_genre=Pop_BPM=142_instrumental=True_hilohi_jump_70.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Happy-Pop-142/mood=Happy_genre=Pop_BPM=142_instrumental=True_hilohi_jump_70_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_lo2hi_lin_45.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_lo2hi_lin_45.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_lo2hi_lin_45_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/5-Intensity/Powerful-Classical-90/mood=Powerful_genre=Classical_BPM=90_instrumental=True_hilohi_lin_33.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Powerful-Classical-90/mood=Powerful_genre=Classical_BPM=90_instrumental=True_hilohi_lin_33.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/5-Intensity/Powerful-Classical-90/mood=Powerful_genre=Classical_BPM=90_instrumental=True_hilohi_lin_33_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Musical Structure Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-World-141/mood=Suspenseful_genre=World_BPM=141_instrumental=True_ABBA_33.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-World-141/mood=Suspenseful_genre=World_BPM=141_instrumental=True_ABBA_33.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-World-141/mood=Suspenseful_genre=World_BPM=141_instrumental=True_ABBA_33_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-91/mood=Epic_genre=Pop_BPM=91_instrumental=True_ABA_44.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-91/mood=Epic_genre=Pop_BPM=91_instrumental=True_ABA_44.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-91/mood=Epic_genre=Pop_BPM=91_instrumental=True_ABA_44_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Background-96/mood=Inspiring_genre=Background_BPM=96_instrumental=True_AB_80.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Background-96/mood=Inspiring_genre=Background_BPM=96_instrumental=True_AB_80.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Background-96/mood=Inspiring_genre=Background_BPM=96_instrumental=True_AB_80_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Powerful-Electronic-133/mood=Powerful_genre=Electronic_BPM=133_instrumental=True_AB_45.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Powerful-Electronic-133/mood=Powerful_genre=Electronic_BPM=133_instrumental=True_AB_45.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Powerful-Electronic-133/mood=Powerful_genre=Electronic_BPM=133_instrumental=True_AB_45_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Pop-112/mood=Inspiring_genre=Pop_BPM=112_instrumental=True_ABA_64.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Pop-112/mood=Inspiring_genre=Pop_BPM=112_instrumental=True_ABA_64.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Inspiring-Pop-112/mood=Inspiring_genre=Pop_BPM=112_instrumental=True_ABA_64_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Frantic-Background-93/mood=Frantic_genre=Background_BPM=93_instrumental=True_ABBB_55.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Frantic-Background-93/mood=Frantic_genre=Background_BPM=93_instrumental=True_ABBB_55.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Frantic-Background-93/mood=Frantic_genre=Background_BPM=93_instrumental=True_ABBB_55_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-142/mood=Epic_genre=Pop_BPM=142_instrumental=True_ABB_24.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-142/mood=Epic_genre=Pop_BPM=142_instrumental=True_ABB_24.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Epic-Pop-142/mood=Epic_genre=Pop_BPM=142_instrumental=True_ABB_24_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Angry-Electronic-130/mood=Angry_genre=Electronic_BPM=130_instrumental=True_ABA_65.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Angry-Electronic-130/mood=Angry_genre=Electronic_BPM=130_instrumental=True_ABA_65.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Angry-Electronic-130/mood=Angry_genre=Electronic_BPM=130_instrumental=True_ABA_65_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-Film-135/mood=Suspenseful_genre=Film_BPM=135_instrumental=True_AAAB_256.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-Film-135/mood=Suspenseful_genre=Film_BPM=135_instrumental=True_AAAB_256.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Cherrypicked/3-Structure/Suspenseful-Film-135/mood=Suspenseful_genre=Film_BPM=135_instrumental=True_AAAB_256_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="80">
+                    <h5 class="text-center">Melody Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="30">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="30">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Powerful-Electronic-119/mood=Powerful_genre=Electronic_BPM=119_instrumental=True_326_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Powerful-Electronic-119/mood=Powerful_genre=Electronic_BPM=119_instrumental=True_326_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Powerful-Electronic-119/mood=Powerful_genre=Electronic_BPM=119_instrumental=True_326_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Powerful-Electronic-119/mood=Powerful_genre=Electronic_BPM=119_instrumental=True_326_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-118/mood=Frantic_genre=Film_BPM=118_instrumental=True_307_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-118/mood=Frantic_genre=Film_BPM=118_instrumental=True_307_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-118/mood=Frantic_genre=Film_BPM=118_instrumental=True_307_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-118/mood=Frantic_genre=Film_BPM=118_instrumental=True_307_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-120/mood=Frantic_genre=Film_BPM=120_instrumental=True_15_ditto_135_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-120/mood=Frantic_genre=Film_BPM=120_instrumental=True_15_ditto_135.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-120/mood=Frantic_genre=Film_BPM=120_instrumental=True_15_ditto_135.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Film-120/mood=Frantic_genre=Film_BPM=120_instrumental=True_15_ditto_135_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Epic-Film-120/mood=Epic_genre=Film_BPM=120_instrumental=True_162_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Epic-Film-120/mood=Epic_genre=Film_BPM=120_instrumental=True_162_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Epic-Film-120/mood=Epic_genre=Film_BPM=120_instrumental=True_162_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Epic-Film-120/mood=Epic_genre=Film_BPM=120_instrumental=True_162_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Pop-132/mood=Inspiring_genre=Pop_BPM=132_instrumental=True_375_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Pop-132/mood=Inspiring_genre=Pop_BPM=132_instrumental=True_375_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Pop-132/mood=Inspiring_genre=Pop_BPM=132_instrumental=True_375_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Pop-132/mood=Inspiring_genre=Pop_BPM=132_instrumental=True_375_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_129_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_129_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_129_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Suspenseful-Film-120/mood=Suspenseful_genre=Film_BPM=120_instrumental=True_129_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Groovy-Background-119/mood=Groovy_genre=Background_BPM=119_instrumental=True_65_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Groovy-Background-119/mood=Groovy_genre=Background_BPM=119_instrumental=True_65_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Groovy-Background-119/mood=Groovy_genre=Background_BPM=119_instrumental=True_65_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Groovy-Background-119/mood=Groovy_genre=Background_BPM=119_instrumental=True_65_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Neutral-Background-120/mood=Neutral_genre=Background_BPM=120_instrumental=True_359_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Neutral-Background-120/mood=Neutral_genre=Background_BPM=120_instrumental=True_359_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Neutral-Background-120/mood=Neutral_genre=Background_BPM=120_instrumental=True_359_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Neutral-Background-120/mood=Neutral_genre=Background_BPM=120_instrumental=True_359_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Background-119/mood=Frantic_genre=Background_BPM=119_instrumental=True_325_ditto_67_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Background-119/mood=Frantic_genre=Background_BPM=119_instrumental=True_325_ditto_67.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Background-119/mood=Frantic_genre=Background_BPM=119_instrumental=True_325_ditto_67.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Frantic-Background-119/mood=Frantic_genre=Background_BPM=119_instrumental=True_325_ditto_67_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_88_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_88_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_88_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Cherrypicked/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_88_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+              </table>
+
+
+
+            </div>
+
+            <div class="section text-justify">
+              <h1>Examples (Random)</h1>
+              Below, we display editing and control results for a wide range of music creation tasks, including
+              outpainting, inpainting, looping, intensity, melody, and musical structure control. Note that this
+              webpage is best viewed with Chrome.
+              The examples here randomly generated.
+              <br><br>
+
+              For the outpainting, inpainting, and looping examples, we show the reference audio and the generated audio
+              with an overlap region of 1 second. For intensity and musical structure control, we show the generated
+              audio,
+              with the target and generated control feature displayed on the right. For melody control, we show the
+              original
+              melody, generated audio, and the target and generated melody features.
+
+              <table class="table table-sm text-center" style="vertical-align: middle;">
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Outpainting</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="46">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Happy-Dance-124/mood=Happy_genre=Dance_BPM=124_instrumental=True_ref_183.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Happy-Dance-124/mood=Happy_genre=Dance_BPM=124_instrumental=True_ref_183.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Happy-Dance-124/mood=Happy_genre=Dance_BPM=124_instrumental=True_right-1_183.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Happy-Dance-124/mood=Happy_genre=Dance_BPM=124_instrumental=True_right-1_183.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Sexy-Electronic-132/mood=Sexy_genre=Electronic_BPM=132_instrumental=True_ref_186.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Sexy-Electronic-132/mood=Sexy_genre=Electronic_BPM=132_instrumental=True_ref_186.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Sexy-Electronic-132/mood=Sexy_genre=Electronic_BPM=132_instrumental=True_right-1_186.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Sexy-Electronic-132/mood=Sexy_genre=Electronic_BPM=132_instrumental=True_right-1_186.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Epic-Pop-114/mood=Epic_genre=Pop_BPM=114_instrumental=True_ref_268.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Epic-Pop-114/mood=Epic_genre=Pop_BPM=114_instrumental=True_ref_268.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Epic-Pop-114/mood=Epic_genre=Pop_BPM=114_instrumental=True_right-1_268.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Epic-Pop-114/mood=Epic_genre=Pop_BPM=114_instrumental=True_right-1_268.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Happy-Pop-115/mood=Happy_genre=Pop_BPM=115_instrumental=True_ref_212.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Happy-Pop-115/mood=Happy_genre=Pop_BPM=115_instrumental=True_ref_212.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Happy-Pop-115/mood=Happy_genre=Pop_BPM=115_instrumental=True_right-1_212.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Happy-Pop-115/mood=Happy_genre=Pop_BPM=115_instrumental=True_right-1_212.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Nostalgic-Rock-122/mood=Nostalgic_genre=Rock_BPM=122_instrumental=True_ref_291.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Nostalgic-Rock-122/mood=Nostalgic_genre=Rock_BPM=122_instrumental=True_ref_291.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Nostalgic-Rock-122/mood=Nostalgic_genre=Rock_BPM=122_instrumental=True_right-1_291.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Nostalgic-Rock-122/mood=Nostalgic_genre=Rock_BPM=122_instrumental=True_right-1_291.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_ref_87.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_ref_87.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_right-1_87.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Suspenseful-Film-137/mood=Suspenseful_genre=Film_BPM=137_instrumental=True_right-1_87.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Inspiring-Film-90/mood=Inspiring_genre=Film_BPM=90_instrumental=True_ref_239.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Inspiring-Film-90/mood=Inspiring_genre=Film_BPM=90_instrumental=True_ref_239.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Inspiring-Film-90/mood=Inspiring_genre=Film_BPM=90_instrumental=True_right-1_239.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Inspiring-Film-90/mood=Inspiring_genre=Film_BPM=90_instrumental=True_right-1_239.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Gritty-Electronic-119/mood=Gritty_genre=Electronic_BPM=119_instrumental=True_ref_196.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Gritty-Electronic-119/mood=Gritty_genre=Electronic_BPM=119_instrumental=True_ref_196.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Gritty-Electronic-119/mood=Gritty_genre=Electronic_BPM=119_instrumental=True_right-1_196.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Gritty-Electronic-119/mood=Gritty_genre=Electronic_BPM=119_instrumental=True_right-1_196.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Angry-Dance-89/mood=Angry_genre=Dance_BPM=89_instrumental=True_ref_17.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Angry-Dance-89/mood=Angry_genre=Dance_BPM=89_instrumental=True_ref_17.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Angry-Dance-89/mood=Angry_genre=Dance_BPM=89_instrumental=True_right-1_17.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Angry-Dance-89/mood=Angry_genre=Dance_BPM=89_instrumental=True_right-1_17.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="23">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Neutral-World-127/mood=Neutral_genre=World_BPM=127_instrumental=True_ref_284.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Neutral-World-127/mood=Neutral_genre=World_BPM=127_instrumental=True_ref_284.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="46">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/1-Outpainting/Neutral-World-127/mood=Neutral_genre=World_BPM=127_instrumental=True_right-1_284.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/1-Outpainting/Neutral-World-127/mood=Neutral_genre=World_BPM=127_instrumental=True_right-1_284.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Inpainting</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Suspenseful-Film-124/mood=Suspenseful_genre=Film_BPM=124_instrumental=True_ref_116.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Suspenseful-Film-124/mood=Suspenseful_genre=Film_BPM=124_instrumental=True_ref_116.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Suspenseful-Film-124/mood=Suspenseful_genre=Film_BPM=124_instrumental=True_inpaint-4_116.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Suspenseful-Film-124/mood=Suspenseful_genre=Film_BPM=124_instrumental=True_inpaint-4_116.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Gritty-Dance-106/mood=Gritty_genre=Dance_BPM=106_instrumental=True_ref_290.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Gritty-Dance-106/mood=Gritty_genre=Dance_BPM=106_instrumental=True_ref_290.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Gritty-Dance-106/mood=Gritty_genre=Dance_BPM=106_instrumental=True_inpaint-4_290.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Gritty-Dance-106/mood=Gritty_genre=Dance_BPM=106_instrumental=True_inpaint-4_290.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Suspenseful-World-98/mood=Suspenseful_genre=World_BPM=98_instrumental=True_ref_115.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Suspenseful-World-98/mood=Suspenseful_genre=World_BPM=98_instrumental=True_ref_115.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Suspenseful-World-98/mood=Suspenseful_genre=World_BPM=98_instrumental=True_inpaint-4_115.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Suspenseful-World-98/mood=Suspenseful_genre=World_BPM=98_instrumental=True_inpaint-4_115.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Epic-Classical-132/mood=Epic_genre=Classical_BPM=132_instrumental=True_ref_91.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Epic-Classical-132/mood=Epic_genre=Classical_BPM=132_instrumental=True_ref_91.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Epic-Classical-132/mood=Epic_genre=Classical_BPM=132_instrumental=True_inpaint-4_91.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Epic-Classical-132/mood=Epic_genre=Classical_BPM=132_instrumental=True_inpaint-4_91.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Neutral-World-135/mood=Neutral_genre=World_BPM=135_instrumental=True_ref_43.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Neutral-World-135/mood=Neutral_genre=World_BPM=135_instrumental=True_ref_43.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Neutral-World-135/mood=Neutral_genre=World_BPM=135_instrumental=True_inpaint-4_43.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Neutral-World-135/mood=Neutral_genre=World_BPM=135_instrumental=True_inpaint-4_43.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Sad-Jazz-103/mood=Sad_genre=Jazz_BPM=103_instrumental=True_ref_182.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Sad-Jazz-103/mood=Sad_genre=Jazz_BPM=103_instrumental=True_ref_182.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Sad-Jazz-103/mood=Sad_genre=Jazz_BPM=103_instrumental=True_inpaint-4_182.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Sad-Jazz-103/mood=Sad_genre=Jazz_BPM=103_instrumental=True_inpaint-4_182.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Powerful-Rock-143/mood=Powerful_genre=Rock_BPM=143_instrumental=True_ref_80.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Powerful-Rock-143/mood=Powerful_genre=Rock_BPM=143_instrumental=True_ref_80.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Powerful-Rock-143/mood=Powerful_genre=Rock_BPM=143_instrumental=True_inpaint-4_80.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Powerful-Rock-143/mood=Powerful_genre=Rock_BPM=143_instrumental=True_inpaint-4_80.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Inspiring-Pop-85/mood=Inspiring_genre=Pop_BPM=85_instrumental=True_ref_306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Inspiring-Pop-85/mood=Inspiring_genre=Pop_BPM=85_instrumental=True_ref_306.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Inspiring-Pop-85/mood=Inspiring_genre=Pop_BPM=85_instrumental=True_inpaint-4_306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Inspiring-Pop-85/mood=Inspiring_genre=Pop_BPM=85_instrumental=True_inpaint-4_306.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Powerful-Electronic-108/mood=Powerful_genre=Electronic_BPM=108_instrumental=True_ref_131.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Powerful-Electronic-108/mood=Powerful_genre=Electronic_BPM=108_instrumental=True_ref_131.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/2-Inpainting/Powerful-Electronic-108/mood=Powerful_genre=Electronic_BPM=108_instrumental=True_inpaint-4_131.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/2-Inpainting/Powerful-Electronic-108/mood=Powerful_genre=Electronic_BPM=108_instrumental=True_inpaint-4_131.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Looping</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="50">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Inspiring-Acoustic-114/mood=Inspiring_genre=Acoustic_BPM=114_instrumental=True_ref_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Inspiring-Acoustic-114/mood=Inspiring_genre=Acoustic_BPM=114_instrumental=True_ref_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Inspiring-Acoustic-114/mood=Inspiring_genre=Acoustic_BPM=114_instrumental=True_rightloop-1_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Inspiring-Acoustic-114/mood=Inspiring_genre=Acoustic_BPM=114_instrumental=True_rightloop-1_1.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Gritty-Electronic-124/mood=Gritty_genre=Electronic_BPM=124_instrumental=True_ref_243.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Gritty-Electronic-124/mood=Gritty_genre=Electronic_BPM=124_instrumental=True_ref_243.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Gritty-Electronic-124/mood=Gritty_genre=Electronic_BPM=124_instrumental=True_rightloop-1_243.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Gritty-Electronic-124/mood=Gritty_genre=Electronic_BPM=124_instrumental=True_rightloop-1_243.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Sad-Religious-87/mood=Sad_genre=Religious_BPM=87_instrumental=True_ref_62.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Sad-Religious-87/mood=Sad_genre=Religious_BPM=87_instrumental=True_ref_62.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Sad-Religious-87/mood=Sad_genre=Religious_BPM=87_instrumental=True_rightloop-1_62.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Sad-Religious-87/mood=Sad_genre=Religious_BPM=87_instrumental=True_rightloop-1_62.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Angry-Dance-98/mood=Angry_genre=Dance_BPM=98_instrumental=True_ref_191.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Angry-Dance-98/mood=Angry_genre=Dance_BPM=98_instrumental=True_ref_191.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Angry-Dance-98/mood=Angry_genre=Dance_BPM=98_instrumental=True_rightloop-1_191.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Angry-Dance-98/mood=Angry_genre=Dance_BPM=98_instrumental=True_rightloop-1_191.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Angry-Electronic-144/mood=Angry_genre=Electronic_BPM=144_instrumental=True_ref_9.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Angry-Electronic-144/mood=Angry_genre=Electronic_BPM=144_instrumental=True_ref_9.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Angry-Electronic-144/mood=Angry_genre=Electronic_BPM=144_instrumental=True_rightloop-1_9.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Angry-Electronic-144/mood=Angry_genre=Electronic_BPM=144_instrumental=True_rightloop-1_9.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Suspenseful-World-138/mood=Suspenseful_genre=World_BPM=138_instrumental=True_ref_129.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Suspenseful-World-138/mood=Suspenseful_genre=World_BPM=138_instrumental=True_ref_129.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Suspenseful-World-138/mood=Suspenseful_genre=World_BPM=138_instrumental=True_rightloop-1_129.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Suspenseful-World-138/mood=Suspenseful_genre=World_BPM=138_instrumental=True_rightloop-1_129.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Inspiring-Film-141/mood=Inspiring_genre=Film_BPM=141_instrumental=True_ref_102.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Inspiring-Film-141/mood=Inspiring_genre=Film_BPM=141_instrumental=True_ref_102.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Inspiring-Film-141/mood=Inspiring_genre=Film_BPM=141_instrumental=True_rightloop-1_102.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Inspiring-Film-141/mood=Inspiring_genre=Film_BPM=141_instrumental=True_rightloop-1_102.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Sexy-Dance-126/mood=Sexy_genre=Dance_BPM=126_instrumental=True_ref_146.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Sexy-Dance-126/mood=Sexy_genre=Dance_BPM=126_instrumental=True_ref_146.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Sexy-Dance-126/mood=Sexy_genre=Dance_BPM=126_instrumental=True_rightloop-1_146.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Sexy-Dance-126/mood=Sexy_genre=Dance_BPM=126_instrumental=True_rightloop-1_146.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Epic-Film-92/mood=Epic_genre=Film_BPM=92_instrumental=True_ref_253.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Epic-Film-92/mood=Epic_genre=Film_BPM=92_instrumental=True_ref_253.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Epic-Film-92/mood=Epic_genre=Film_BPM=92_instrumental=True_rightloop-1_253.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Epic-Film-92/mood=Epic_genre=Film_BPM=92_instrumental=True_rightloop-1_253.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Suspenseful-Classical-103/mood=Suspenseful_genre=Classical_BPM=103_instrumental=True_ref_49.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Suspenseful-Classical-103/mood=Suspenseful_genre=Classical_BPM=103_instrumental=True_ref_49.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="50">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/4-Loops/Suspenseful-Classical-103/mood=Suspenseful_genre=Classical_BPM=103_instrumental=True_rightloop-1_49.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/4-Loops/Suspenseful-Classical-103/mood=Suspenseful_genre=Classical_BPM=103_instrumental=True_rightloop-1_49.png"
+                      alt="Spectrogram">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Intensity Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Powerful-Rock-130/mood=Powerful_genre=Rock_BPM=130_instrumental=True_flat_hi_63.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Powerful-Rock-130/mood=Powerful_genre=Rock_BPM=130_instrumental=True_flat_hi_63.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Powerful-Rock-130/mood=Powerful_genre=Rock_BPM=130_instrumental=True_flat_hi_63_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Angry-Electronic-129/mood=Angry_genre=Electronic_BPM=129_instrumental=True_hi2lo_lin_37.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Angry-Electronic-129/mood=Angry_genre=Electronic_BPM=129_instrumental=True_hi2lo_lin_37.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Angry-Electronic-129/mood=Angry_genre=Electronic_BPM=129_instrumental=True_hi2lo_lin_37_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Angry-Dance-106/mood=Angry_genre=Dance_BPM=106_instrumental=True_lohilo_jump_39.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Angry-Dance-106/mood=Angry_genre=Dance_BPM=106_instrumental=True_lohilo_jump_39.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Angry-Dance-106/mood=Angry_genre=Dance_BPM=106_instrumental=True_lohilo_jump_39_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Happy-Dance-137/mood=Happy_genre=Dance_BPM=137_instrumental=True_hi2lo_jump_11.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Happy-Dance-137/mood=Happy_genre=Dance_BPM=137_instrumental=True_hi2lo_jump_11.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Happy-Dance-137/mood=Happy_genre=Dance_BPM=137_instrumental=True_hi2lo_jump_11_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Epic-Classical-135/mood=Epic_genre=Classical_BPM=135_instrumental=True_hi2lo_lin_186.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Epic-Classical-135/mood=Epic_genre=Classical_BPM=135_instrumental=True_hi2lo_lin_186.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Epic-Classical-135/mood=Epic_genre=Classical_BPM=135_instrumental=True_hi2lo_lin_186_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Suspenseful-Classical-142/mood=Suspenseful_genre=Classical_BPM=142_instrumental=True_lohilo_lin_37.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Suspenseful-Classical-142/mood=Suspenseful_genre=Classical_BPM=142_instrumental=True_lohilo_lin_37.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Suspenseful-Classical-142/mood=Suspenseful_genre=Classical_BPM=142_instrumental=True_lohilo_lin_37_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Nostalgic-Pop-125/mood=Nostalgic_genre=Pop_BPM=125_instrumental=True_flat_lo_49.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Nostalgic-Pop-125/mood=Nostalgic_genre=Pop_BPM=125_instrumental=True_flat_lo_49.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Nostalgic-Pop-125/mood=Nostalgic_genre=Pop_BPM=125_instrumental=True_flat_lo_49_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Neutral-World-91/mood=Neutral_genre=World_BPM=91_instrumental=True_hilohi_jump_180.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Neutral-World-91/mood=Neutral_genre=World_BPM=91_instrumental=True_hilohi_jump_180.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Neutral-World-91/mood=Neutral_genre=World_BPM=91_instrumental=True_hilohi_jump_180_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_hi2lo_jump_114.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_hi2lo_jump_114.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Suspenseful-Film-132/mood=Suspenseful_genre=Film_BPM=132_instrumental=True_hi2lo_jump_114_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/5-Intensity/Nostalgic-Country-130/mood=Nostalgic_genre=Country_BPM=130_instrumental=True_lo2hi_jump_162.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/5-Intensity/Nostalgic-Country-130/mood=Nostalgic_genre=Country_BPM=130_instrumental=True_lo2hi_jump_162.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/5-Intensity/Nostalgic-Country-130/mood=Nostalgic_genre=Country_BPM=130_instrumental=True_lo2hi_jump_162_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="70">
+                    <h5 class="text-center">Musical Structure Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="35">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Powerful-Electronic-129/mood=Powerful_genre=Electronic_BPM=129_instrumental=True_AA_43.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Powerful-Electronic-129/mood=Powerful_genre=Electronic_BPM=129_instrumental=True_AA_43.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Powerful-Electronic-129/mood=Powerful_genre=Electronic_BPM=129_instrumental=True_AA_43_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Nostalgic-Rock-109/mood=Nostalgic_genre=Rock_BPM=109_instrumental=True_AB_201.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Nostalgic-Rock-109/mood=Nostalgic_genre=Rock_BPM=109_instrumental=True_AB_201.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Nostalgic-Rock-109/mood=Nostalgic_genre=Rock_BPM=109_instrumental=True_AB_201_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Gritty-Dance-109/mood=Gritty_genre=Dance_BPM=109_instrumental=True_ABC_180.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Gritty-Dance-109/mood=Gritty_genre=Dance_BPM=109_instrumental=True_ABC_180.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Gritty-Dance-109/mood=Gritty_genre=Dance_BPM=109_instrumental=True_ABC_180_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Epic-Pop-84/mood=Epic_genre=Pop_BPM=84_instrumental=True_AB_205.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Epic-Pop-84/mood=Epic_genre=Pop_BPM=84_instrumental=True_AB_205.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Epic-Pop-84/mood=Epic_genre=Pop_BPM=84_instrumental=True_AB_205_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Angry-Dance-97/mood=Angry_genre=Dance_BPM=97_instrumental=True_AAAB_87.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Angry-Dance-97/mood=Angry_genre=Dance_BPM=97_instrumental=True_AAAB_87.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Angry-Dance-97/mood=Angry_genre=Dance_BPM=97_instrumental=True_AAAB_87_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Inspiring-Electronic-89/mood=Inspiring_genre=Electronic_BPM=89_instrumental=True_ABB_59.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Inspiring-Electronic-89/mood=Inspiring_genre=Electronic_BPM=89_instrumental=True_ABB_59.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Inspiring-Electronic-89/mood=Inspiring_genre=Electronic_BPM=89_instrumental=True_ABB_59_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Suspenseful-Classical-111/mood=Suspenseful_genre=Classical_BPM=111_instrumental=True_ABC_245.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Suspenseful-Classical-111/mood=Suspenseful_genre=Classical_BPM=111_instrumental=True_ABC_245.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Suspenseful-Classical-111/mood=Suspenseful_genre=Classical_BPM=111_instrumental=True_ABC_245_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Suspenseful-Film-117/mood=Suspenseful_genre=Film_BPM=117_instrumental=True_ABBB_23.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Suspenseful-Film-117/mood=Suspenseful_genre=Film_BPM=117_instrumental=True_ABBB_23.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Suspenseful-Film-117/mood=Suspenseful_genre=Film_BPM=117_instrumental=True_ABBB_23_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="35">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/3-Structure/Happy-Reggae-97/mood=Happy_genre=Reggae_BPM=97_instrumental=True_ABA_29.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/3-Structure/Happy-Reggae-97/mood=Happy_genre=Reggae_BPM=97_instrumental=True_ABA_29.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="35">
+                    <img
+                      src="Demo_Assets_Random/3-Structure/Happy-Reggae-97/mood=Happy_genre=Reggae_BPM=97_instrumental=True_ABA_29_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="80">
+                    <h5 class="text-center">Melody Control</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <h5 class="text-center">Reference</h5>
+                  </td>
+                  <td colspan="30">
+                    <h5 class="text-center">Generated</h5>
+                  </td>
+                  <td colspan="30">
+                    <h5 class="text-center">Feature Plots</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Epic-Classical-121/mood=Epic_genre=Classical_BPM=121_instrumental=True_7_ditto_10_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Epic-Classical-121/mood=Epic_genre=Classical_BPM=121_instrumental=True_7_ditto_10.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Epic-Classical-121/mood=Epic_genre=Classical_BPM=121_instrumental=True_7_ditto_10.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Epic-Classical-121/mood=Epic_genre=Classical_BPM=121_instrumental=True_7_ditto_10_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Angry-Electronic-120/mood=Angry_genre=Electronic_BPM=120_instrumental=True_71_ditto_72_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Angry-Electronic-120/mood=Angry_genre=Electronic_BPM=120_instrumental=True_71_ditto_72.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Angry-Electronic-120/mood=Angry_genre=Electronic_BPM=120_instrumental=True_71_ditto_72.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Angry-Electronic-120/mood=Angry_genre=Electronic_BPM=120_instrumental=True_71_ditto_72_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Groovy-Electronic-132/mood=Groovy_genre=Electronic_BPM=132_instrumental=True_52_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Groovy-Electronic-132/mood=Groovy_genre=Electronic_BPM=132_instrumental=True_52_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Groovy-Electronic-132/mood=Groovy_genre=Electronic_BPM=132_instrumental=True_52_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Groovy-Electronic-132/mood=Groovy_genre=Electronic_BPM=132_instrumental=True_52_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Happy-Dance-119/mood=Happy_genre=Dance_BPM=119_instrumental=True_325_ditto_26_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Happy-Dance-119/mood=Happy_genre=Dance_BPM=119_instrumental=True_325_ditto_26.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Happy-Dance-119/mood=Happy_genre=Dance_BPM=119_instrumental=True_325_ditto_26.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Happy-Dance-119/mood=Happy_genre=Dance_BPM=119_instrumental=True_325_ditto_26_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Angry-Dance-121/mood=Angry_genre=Dance_BPM=121_instrumental=True_318_ditto_45_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Angry-Dance-121/mood=Angry_genre=Dance_BPM=121_instrumental=True_318_ditto_45.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Angry-Dance-121/mood=Angry_genre=Dance_BPM=121_instrumental=True_318_ditto_45.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Angry-Dance-121/mood=Angry_genre=Dance_BPM=121_instrumental=True_318_ditto_45_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_351_ditto_127_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_351_ditto_127.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_351_ditto_127.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Inspiring-Acoustic-120/mood=Inspiring_genre=Acoustic_BPM=120_instrumental=True_351_ditto_127_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Sad-Jazz-120/mood=Sad_genre=Jazz_BPM=120_instrumental=True_162_1_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Sad-Jazz-120/mood=Sad_genre=Jazz_BPM=120_instrumental=True_162_1.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Sad-Jazz-120/mood=Sad_genre=Jazz_BPM=120_instrumental=True_162_1.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Sad-Jazz-120/mood=Sad_genre=Jazz_BPM=120_instrumental=True_162_1_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Epic-Film-123/mood=Epic_genre=Film_BPM=123_instrumental=True_113_ditto_119_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Epic-Film-123/mood=Epic_genre=Film_BPM=123_instrumental=True_113_ditto_119.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Epic-Film-123/mood=Epic_genre=Film_BPM=123_instrumental=True_113_ditto_119.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Epic-Film-123/mood=Epic_genre=Film_BPM=123_instrumental=True_113_ditto_119_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Gritty-Dance-119/mood=Gritty_genre=Dance_BPM=119_instrumental=True_103_ditto_113_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Gritty-Dance-119/mood=Gritty_genre=Dance_BPM=119_instrumental=True_103_ditto_113.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Gritty-Dance-119/mood=Gritty_genre=Dance_BPM=119_instrumental=True_103_ditto_113.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Gritty-Dance-119/mood=Gritty_genre=Dance_BPM=119_instrumental=True_103_ditto_113_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="20">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Neutral-World-120/mood=Neutral_genre=World_BPM=120_instrumental=True_106_ditto_11_tgt.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="30">
+                    <audio controls>
+                      <source
+                        src="Demo_Assets_Random/6-Melody/Neutral-World-120/mood=Neutral_genre=World_BPM=120_instrumental=True_106_ditto_11.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                    <BR><img
+                      src="Demo_Assets_Random/6-Melody/Neutral-World-120/mood=Neutral_genre=World_BPM=120_instrumental=True_106_ditto_11.png"
+                      alt="Spectrogram">
+                  </td>
+                  <td colspan="30">
+                    <img
+                      src="Demo_Assets_Random/6-Melody/Neutral-World-120/mood=Neutral_genre=World_BPM=120_instrumental=True_106_ditto_11_feature.png"
+                      alt="Features">
+                  </td>
+                </tr>
+              </table>
+
+            </div>
+
+</body>
+
+</html>
