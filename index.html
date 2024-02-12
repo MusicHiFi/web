@@ -121,11 +121,11 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
               <h1>Examples </h1>
 
               We showcase sample outputs that highlight the capabilities of our high-fidelity, cascaded stereo vocoding system for music generation. 
-              Starting from Mel-spectrograms, we first generate a waveform with BigVGAN vocoder and then enhance the generated music through bandwidth extension 
+              Starting from Mel-spectrograms, we first generate a waveform with GAN-based vocoder and then enhance the generated music through GAN-based bandwidth extension 
               and mono-to-stereo upmixing.
               Our demonstration includes both intermediate outputs from different vocoding stages and the system's final output. 
               The input Mel-spectrograms are generated from a diffusion based music generation system.
-              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the audio. 
+              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the stereo audio. 
               All audio samples are provided in MP3 format.
 
               <table class="table table-sm text-center" style="vertical-align: middle;">
@@ -784,9 +784,10 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
 
               Below are samples from out-of-distribution data, comparing between our generated audio and the original ground truth. 
               The Mel-spectrograms used for synthesis are extracted from licensed music under commercially available Creative Commons from the <a href="https://github.com/mdeff/fma">FMA dataset </a>.
-              Detailed licensing information for each music piece can be found at <a href="https://github.com/MusicHiFi/web/tree/main/assets/assets/fma/licenses">this link</a>.
-              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the audio.
+              Detailed licensing information for each music piece can be found at <a href="https://github.com/MusicHiFi/web/tree/main/assets/fma/licenses">this link</a>.
+              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the stereo audio.
               All audio samples are provided in MP3 format.
+
               <table class="table table-sm text-center" style="vertical-align: middle;">
                 <tr>
                   <td colspan="75">
