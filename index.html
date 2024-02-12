@@ -16,7 +16,7 @@
     }
 
 
-    td {
+    td, th {
       margin: 0 auto;
       border: 1px solid #ccc;
       padding: 10px;
@@ -31,6 +31,11 @@
     audio {
       width: 100%;
       /* height: 70%; */
+    }
+
+    .vertical-text {
+        writing-mode: vertical-lr; /* Orient text vertically */
+        transform: rotate(180deg); /* Rotate text to face the right way up */
     }
   </style>
 </head>
@@ -119,8 +124,9 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
               Starting from Mel-spectrograms, we first generate a waveform with BigVGAN vocoder and then enhance the generated music through bandwidth extension 
               and mono-to-stereo upmixing.
               Our demonstration includes both intermediate outputs from different vocoding stages and the system's final output. 
-              The input Mel-spectrograms are generated from a diffusion based music generation system and human-produced music, 
-              the latter of which is CC-BY licensed from the FMA dataset. All audio samples are provided in MP3 format.
+              The input Mel-spectrograms are generated from a diffusion based music generation system.
+              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the audio. 
+              All audio samples are provided in MP3 format.
 
               <table class="table table-sm text-center" style="vertical-align: middle;">
                 <tr>
@@ -130,13 +136,13 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
                 </tr>
                 <tr>
                   <td colspan="24">
-                    <h5 class="text-center">Vocoding</h5>
+                    <h6 class="text-center">Vocoding</h6>
                   </td>
                   <td colspan="24">
-                    <h5 class="text-center">Bandwidth Extension</h5>
+                    <h6 class="text-center">Bandwidth Extension</h6>
                   </td>
                   <td colspan="24">
-                    <h5 class="text-center">Mono-to-stereo</h5>
+                    <h6 class="text-center">Mono-to-stereo</h6>
                   </td>
                 </tr>
                 <tr>
@@ -772,6 +778,554 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
               </tr>
               </table>
 
+            </div>
+
+            <div class="section text-justify">
+
+              Below are samples from out-of-distribution data, comparing between our generated audio and the original ground truth. 
+              The Mel-spectrograms used for synthesis are extracted from licensed music under commercially available Creative Commons from the <a href="https://github.com/mdeff/fma">FMA dataset </a>.
+              Detailed licensing information for each music piece can be found at <a href="https://github.com/MusicHiFi/web/tree/main/assets/assets/fma/licenses">this link</a>.
+              For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the audio.
+              All audio samples are provided in MP3 format.
+              <table class="table table-sm text-center" style="vertical-align: middle;">
+                <tr>
+                  <td colspan="75">
+                    <h5 class="text-center">Vocoded from FMA samples (cherrypicked)</h5>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="27">
+                    <h6 class="text-center">Vocoding</h6>
+                  </td>
+                  <td colspan="24">
+                    <h6 class="text-center">Bandwidth Extension</h6>
+                  </td>
+                  <td colspan="24">
+                    <h6 class="text-center">Mono-to-stereo</h6>
+                  </td>
+                </tr>
+                  
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/023172.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/023172.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/046157.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/046157.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/114386.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/114386.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/110262.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/110262.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/114389.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/114389.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/154306.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/154306.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              
+              </table>
+              <table>
+                <tr>
+                  <td colspan="3" class="vertical-text">Generated</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_voc/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_voc/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_bwe/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_bwe/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/bvg_m2s/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/bvg_m2s/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="vertical-text">Ground Truth</td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_voc/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_voc/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_bwe/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_bwe/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                  <td colspan="24">
+                    <BR><img
+                      src="assets/fma/gt_stereo/054468.png"
+                      alt="Spectrogram">
+                    <audio controls>
+                      <source
+                        src="assets/fma/gt_stereo/054468.mp3"
+                        type="audio/mp3">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </td>
+                </tr>
+              </table>
             </div>
 
 </body>
