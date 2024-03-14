@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>MusicHiFi: Efficient High-Fidelity Stereo Vocoding</title>
+  <title>MusicHiFi: Fast High-Fidelity Stereo Vocoding</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <meta name="theme-color" content="#563d7c">
@@ -45,7 +45,7 @@
     <br>
     <div class="text-wrap" width="200px">
       <font face="helvetica , ariel, &#39;sans serif&#39;" size="6">
-        <b>MusicHiFi: Efficient High-Fidelity Stereo Vocoding</b><br><br>
+        <b>MusicHiFi: Fast High-Fidelity Stereo Vocoding</b><br><br>
       </font>
     </div>
 
@@ -64,10 +64,10 @@
     <div class="m-5">
       <a class="btn btn-outline-dark" href="https://arxiv.org/" type="button"><i
           class="bi bi-newspaper"></i> Paper</a>
-      <a class="btn btn-outline-dark" href="https://youtube.com" type="button"> <i
+      <a class="btn btn-outline-dark" href="https://youtu.be/aHWzqf3I0XE" type="button"> <i
           class="bi bi-camera-reels"></i> Video</a>
-      <a class="btn btn-outline-dark" href="https://huggingface.co/" type="button"> <i
-            class=""></i> &#129303; HF paper</a>
+      <!-- <a class="btn btn-outline-dark" href="https://huggingface.co/" type="button"> <i
+            class=""></i> &#129303; HF paper</a> -->
           
     </div>
 
@@ -79,24 +79,25 @@
             <div class="section">
               <!-- # Show video -->
               <div class="embed-responsive embed-responsive-16by9">
-                <iframe width="560" height="315" src="https://www.youtube.com/"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/aHWzqf3I0XE?si=GzKwYHWRMvGhlLUX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
               </div>
               <br>
               <!-- Show Abstract -->
               <h1 class="text-justify">Abstract</h1>
               <hr>
               <p class="pr-5 pl-5 text-justify">
-                In diffusion-based text-to-music (TTM) generation, one typical approach involves a cascaded system that starts with a text-to-spectrogram diffusion-based generator, followed by a phase reconstructor (vocoder) to convert the spectrogram into a waveform.
-Commonly used vocoders produce monophonic audio at lower resolutions (e.g. 16-24kHz), which limits their use for applications requiring high-fidelity sound.
-To address this issue, we propose MusicHiFi - a new vocoder for high-fidelity stereophonic sound generation.
-Our method employs a cascade of three generative adversarial network-based models (GAN-triplet), each designed to progressively enhance the fidelity of the generated music. 
-Initially, we convert spectrograms to low-resolution audio. This low-resolution audio is then upsampled to high-resolution monophonic audio using a bandwidth expander. 
-The final step involves converting this mono high-resolution audio into stereophonic high-resolution audio.
-Compared to previous work, our method integrates a unified GAN-based discriminator and generator design, complemented by a novel cycle-consistent mono-to-stereo module.
-By comparing both objective and subjective fidelity metrics on out-of-domain music datasets, our approach not only achieves competitive fidelity with remarkable efficiency, but also produces interpretable and listenable intermediate outputs.
+                Diffusion-based audio and music generation models commonly generate music by
+                constructing an image representation of audio (e.g., a mel-spectrogram) and then 
+                converting it to audio using a phase reconstruction model or vocoder. 
+                Typical vocoders, however, produce monophonic audio at lower resolutions (e.g., 16-24 kHz), 
+                which limits their effectiveness. We propose MusicHiFi --- an efficient high-fidelity 
+                stereophonic vocoder. Our method employs a cascade of three generative adversarial 
+                networks (GANs) that convert low-resolution mel-spectrograms to audio, 
+                upsamples to high-resolution audio via bandwidth expansion, and upmixes to 
+                stereophonic audio. Compared to previous work, we propose 1) a unified GAN-based 
+                generator and discriminator architecture and training procedure for each stage of 
+                our cascade, 2) a new  fast, near cycle-consistent bandwidth extension module, 
+                and 3) a new fast cycle-consistent mono-to-stereo module that ensures the preservation of monophonic content in the output. We evaluate our proposed approach using both objective and subjective listening tests and find our approach comparable or better audio quality better spatialization control and significantly faster inference speed compared to past work.
               </p>
             </div><br>
 
@@ -108,7 +109,8 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
                 <pre>
           <code>
           @article{zhu2024musichifi,
-              title={MusicHiFi: Efficient High-Fidelity Stereo Vocoding}, 
+              title={MusicHiFi: Fast High-Fidelity Stereo Vocoding}, 
+              author={Zhu, Ge and Caceres, Juan-Pablo and Duan, Zhiyao and Bryan, Nicholas J.},
               year={2024},
               archivePrefix={arXiv},
               primaryClass={cs.SD},
@@ -131,7 +133,7 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
               <table class="table table-sm text-center" style="vertical-align: middle;">
                 <tr>
                   <td colspan="72">
-                    <h5 class="text-center">Vocoded from generated Spectrogram</h5>
+                    <h5 class="text-center">Vocoded from Generated Mel-spectrograms</h5>
                   </td>
                 </tr>
                 <tr>
@@ -783,7 +785,7 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
             <div class="section text-justify">
 
               Below are samples from out-of-distribution data, comparing between our generated audio and the original ground truth. 
-              The Mel-spectrograms used for synthesis are extracted from licensed music under commercially available Creative Commons from the <a href="https://github.com/mdeff/fma">FMA dataset </a>.
+              The Mel-spectrograms used for synthesis are extracted from Creative Commons from the <a href="https://github.com/mdeff/fma">FMA dataset </a>.
               Detailed licensing information for each music piece can be found at <a href="https://github.com/MusicHiFi/web/tree/main/assets/fma/licenses">this link</a>.
               For the mono-to-stereo conversion, the spectrograms depicted represent the side channel of the stereo audio.
               All audio samples are provided in MP3 format.
@@ -791,7 +793,7 @@ By comparing both objective and subjective fidelity metrics on out-of-domain mus
               <table class="table table-sm text-center" style="vertical-align: middle;">
                 <tr>
                   <td colspan="75">
-                    <h5 class="text-center">Vocoded from FMA samples (cherrypicked)</h5>
+                    <h5 class="text-center">Vocoded from FMA samples</h5>
                   </td>
                 </tr>
 
